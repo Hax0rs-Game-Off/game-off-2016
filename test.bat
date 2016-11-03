@@ -1,3 +1,2 @@
-CD "src"
-"C:\Program Files\LOVE\love.exe" --console
+"C:\Program Files\LOVE\love.exe" "src" --console
 pause
