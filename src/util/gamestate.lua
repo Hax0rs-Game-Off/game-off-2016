@@ -11,4 +11,5 @@ function GameState:draw()end
 function GameState:start()end
 function GameState:stop()end
 function GameState:keypressed(k, u)end
-function GameState:mousepressed(x, y, button)end
+function GameState:mousepressed(x, y, button, istouch)end
+function GameState:resize(w, h)end

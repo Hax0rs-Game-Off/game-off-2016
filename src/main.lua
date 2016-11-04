@@ -48,5 +48,9 @@ function love.mousepressed( x, y, button, istouch )
     stack:mousepressed(x, y, button, istouch)
 end
 
+function love.resize(w, h)
+    stack:resize(w, h)
+end
+
 function love.quit()
 end
