@@ -23,8 +23,8 @@ function Person:change_state(state)
 end
 
 function Person:set_pos(x, y)
-    self.x = x
-    self.y = y
+    self.x = x + self.ciw/2
+    self.y = y + self.cih/2
 end
 
 function Person:update(dt)
