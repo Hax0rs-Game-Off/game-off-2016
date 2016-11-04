@@ -1,7 +1,8 @@
 -- intro
 
 require("util/gamestate")
-require("util/resources")
+
+require("maingame")
 
 Intro = class("Intro", GameState)
 
@@ -15,5 +16,7 @@ function Intro:draw()
 end
 
 function Intro:keypressed(k, u)
-    stack:pop()
+    mainGame = MainGame()
+    stack:push(mainGame)
+    --stack:pop()
 end

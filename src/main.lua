@@ -1,6 +1,8 @@
 require("util/gamestack")
 cargo = require("util/cargo/cargo")
 
+require("intro")
+
 -- load our assets using cargo
 assets = cargo.init({
   dir = 'assets',
@@ -18,7 +20,9 @@ setmetatable(_G, {
 
 function reset()
     -- start game
-    -- stack = GameStack()
+    intro = Intro()
+    stack = GameStack()
+    stack:push(intro)
 end
 
 function love.load()
@@ -27,42 +31,22 @@ function love.load()
     reset()
 end
 
-r = 0
 
 function love.update(dt)
-    -- stack:update(dt)
-    r = r + 2 * dt
+    stack:update(dt)
 end
 
 function love.draw()
-    -- stack:draw()
-
-    background = images.tiles.tile_120
-    bwidth = background:getWidth()
-    bheight = background:getHeight()
-
-    for i = 0, math.floor(love.graphics.getWidth()/bwidth) do
-        for j = 0, math.floor(love.graphics.getHeight()/bheight) do
-            love.graphics.draw(background, i*bwidth, j*bwidth, 0, 1, 1)
-        end
-    end
-
-
-    person = images.people.manblue.stand
-    width = person:getWidth()
-    height = person:getHeight()
-
-    love.graphics.draw(person, 50, 50, r, 1, 1, width/2, height/2)
-
+    stack:draw()
     love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
 end
 
 function love.keypressed(k, u)
-    --stack:keypressed(k, u)
+    stack:keypressed(k, u)
 end
 
-function love.mousepressed( x, y, button )
-    --stack:mousepressed(x, y, button)
+function love.mousepressed( x, y, button, istouch )
+    stack:mousepressed(x, y, button, istouch)
 end
 
 function love.quit()
