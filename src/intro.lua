@@ -15,8 +15,16 @@ function Intro:draw()
     love.graphics.print("Press Escape to skip intro", 10, 10)
 end
 
-function Intro:keypressed(k, u)
+local function startgame()
     mainGame = MainGame()
     stack:push(mainGame)
     --stack:pop()
+end
+
+function Intro:keypressed(k, u)
+    startgame()
+end
+
+function Intro:mousepressed(x, y, button, istouch)
+    startgame()
 end
