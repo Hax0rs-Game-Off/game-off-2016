@@ -22,6 +22,17 @@ end
 function MainGame:update(dt)
     person:update(dt)
     map:update(dt)
+
+    local kd = love.keyboard.isDown
+    local l  = kd("left")  or kd("a")
+    local r  = kd("right") or kd("d")
+    local u  = kd("up")    or kd("w")
+    local d  = kd("down")  or kd("s")
+
+    tx = l and tx - 128*8*dt or tx
+    tx = r and tx + 128*8*dt or tx
+    ty = u and ty - 128*8*dt or ty
+    ty = d and ty + 128*8*dt or ty
 end
 
 function MainGame:draw()
@@ -44,16 +55,6 @@ end
 
 function MainGame:keypressed(k, u)
     --stack:pop()
-    local kd = love.keyboard.isDown
-    local l  = kd("left")  or kd("a")
-    local r  = kd("right") or kd("d")
-    local u  = kd("up")    or kd("w")
-    local d  = kd("down")  or kd("s")
-
-    tx = l and tx - 128 or tx
-    tx = r and tx + 128 or tx
-    ty = u and ty - 128 or ty
-    ty = d and ty + 128 or ty
 end
 
 function MainGame:mousepressed(x, y, button, istouch)
