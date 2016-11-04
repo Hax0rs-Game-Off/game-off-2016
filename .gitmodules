@@ -1,0 +1,3 @@
+[submodule "src/util/cargo"]
+	path = src/util/cargo
+	url = https://github.com/bjornbytes/cargo
