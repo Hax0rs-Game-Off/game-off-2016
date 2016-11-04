@@ -1,11 +1,13 @@
 require("util/gamestate")
 
 require("person")
+require("map")
 
 MainGame = class("mainGame", GameState)
 
 function MainGame:start()
     person = Person(images.people.manblue, "stand")
+    map = Map(10, 4)
     person:set_pos(50, 50)
 end
 
@@ -20,16 +22,7 @@ function MainGame:draw()
 
     love.graphics.clear()
 
-    background = images.tiles.tile_120
-    bwidth = background:getWidth()
-    bheight = background:getHeight()
-
-    for i = 0, math.floor(love.graphics.getWidth()/bwidth) do
-        for j = 0, math.floor(love.graphics.getHeight()/bheight) do
-            love.graphics.draw(background, i*bwidth, j*bwidth, 0, 1, 1)
-        end
-    end
-
+    map:draw()
     person:draw()
 end
 
