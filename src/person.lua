@@ -34,5 +34,5 @@ function Person:update(dt)
 end
 
 function Person:draw()
-    love.graphics.draw(self.currentImage, self.x-self.ciw/2, self.y-self.cih/2, self.r, 1, 1, self.ciw/2, self.cih/2)
+    love.graphics.draw(self.currentImage, self.x-self.ciw/2, self.y-self.cih/2, self.r, 2, 2, self.ciw/2, self.cih/2)
 end

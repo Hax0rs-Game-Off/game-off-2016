@@ -38,7 +38,6 @@ end
 
 function love.draw()
     stack:draw()
-    love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
 end
 
 function love.keypressed(k, u)

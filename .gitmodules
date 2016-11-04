@@ -1,3 +1,6 @@
 [submodule "src/util/cargo"]
 	path = src/util/cargo
 	url = https://github.com/bjornbytes/cargo
+[submodule "src/util/Simple-Tiled-Implementation"]
+	path = src/util/Simple-Tiled-Implementation
+	url = https://github.com/karai17/Simple-Tiled-Implementation

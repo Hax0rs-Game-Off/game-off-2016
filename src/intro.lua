@@ -22,7 +22,7 @@ local function startgame()
 end
 
 function Intro:keypressed(k, u)
-    startgame()
+    --startgame()
 end
 
 function Intro:mousepressed(x, y, button, istouch)
