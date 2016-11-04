@@ -45,6 +45,10 @@ function GameStack:keypressed(k, u)
     if self:current() then self:current():keypressed(k, u) end
 end
 
-function GameStack:mousepressed(x, y, button)
-    if self:current() then self:current():mousepressed(x, y, button) end
+function GameStack:mousepressed(x, y, button, istouch)
+    if self:current() then self:current():mousepressed(x, y, button, istouch) end
+end
+
+function GameStack:resize(w, h)
+    if self:current() then self:current():resize(w, h) end
 end

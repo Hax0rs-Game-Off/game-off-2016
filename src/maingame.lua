@@ -15,6 +15,7 @@ function MainGame:start()
     windowHeight = love.graphics.getHeight()
     tx = 0
     ty = 0
+    sf = 0.5
     map = sti("assets/maps/1.lua", { "box2d" })
 end
 
@@ -27,12 +28,15 @@ function MainGame:draw()
     love.graphics.setBackgroundColor(17, 17, 17)
     love.graphics.setColor(255, 255, 255)
 
+    love.graphics.scale(sf)
+
     love.graphics.translate(-tx, -ty)
-    map:setDrawRange(tx, ty, windowWidth, windowHeight)
+    map:setDrawRange(tx, ty, windowWidth/sf, windowHeight/sf)
 
     -- Draw the map and all objects within
     map:draw()
 
+    love.graphics.scale(1)
     person:draw()
 
     --love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
@@ -52,7 +56,13 @@ function MainGame:keypressed(k, u)
     ty = d and ty + 128 or ty
 end
 
-function MainGame:mousepressed( x, y, button, istouch )
-    person:set_pos(x + tx, y + ty)
+function MainGame:mousepressed(x, y, button, istouch)
+    person:set_pos(x/sf + tx, y/sf + ty)
     --stack:pop()
+end
+
+function MainGame:resize(w, h)
+    windowWidth  = w
+    windowHeight = h
+    map:resize(w, h)
 end
