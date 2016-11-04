@@ -1,6 +1,6 @@
 function love.conf(t)
-    t.title = "GAME TITLE"
-    t.author = "AUTHOR"
+    t.title = "MurderHaus"
+    t.author = "Haxors"
     t.identity = "IDENTITY"
     t.version = "0.10.2" -- Löve version
     t.console = false
