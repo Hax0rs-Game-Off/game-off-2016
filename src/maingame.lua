@@ -1,6 +1,7 @@
 require("util/gamestate")
 
 require("person")
+require("time")
 
 local sti = require("util/Simple-Tiled-Implementation/sti")
 
@@ -9,6 +10,8 @@ MainGame = class("mainGame", GameState)
 function MainGame:start()
     person = Person(images.people.manblue, "stand")
     person:set_pos(50, 50)
+
+    time = Time(540)
 
     -- Grab window size
     windowWidth  = love.graphics.getWidth()
@@ -20,9 +23,10 @@ function MainGame:start()
 end
 
 function MainGame:update(dt)
-    person:update(dt)
+    -- update map
     map:update(dt)
 
+    -- map controls
     local kd = love.keyboard.isDown
     local l  = kd("left")  or kd("a")
     local r  = kd("right") or kd("d")
@@ -33,6 +37,9 @@ function MainGame:update(dt)
     tx = r and tx + 128*8*dt or tx
     ty = u and ty - 128*8*dt or ty
     ty = d and ty + 128*8*dt or ty
+
+    wdt = time:update(dt) -- the time acording to the game world
+    person:update(wdt) -- meirl
 end
 
 function MainGame:draw()
@@ -50,10 +57,27 @@ function MainGame:draw()
     love.graphics.scale(1)
     person:draw()
 
-    --love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
+    love.graphics.translate(tx, ty)
+    love.graphics.scale(1/sf)
+
+    time:draw()
+
+    love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
 end
 
-function MainGame:keypressed(k, u)
+function MainGame:keypressed(key, scancode, isrepeat)
+    if key == "`" then
+        time.speed = 0;
+    end
+    if key == "1" then
+        time.speed = 1;
+    end
+    if key == "2" then
+        time.speed = 2;
+    end
+    if key == "3" then
+        time.speed = 3;
+    end
     --stack:pop()
 end
 

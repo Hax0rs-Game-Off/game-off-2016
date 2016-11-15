@@ -40,8 +40,8 @@ function love.draw()
     stack:draw()
 end
 
-function love.keypressed(k, u)
-    stack:keypressed(k, u)
+function love.keypressed(key, scancode, isrepeat)
+    stack:keypressed(key, scancode, isrepeat)
 end
 
 function love.mousepressed( x, y, button, istouch )

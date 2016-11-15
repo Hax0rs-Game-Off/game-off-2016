@@ -21,7 +21,7 @@ local function startgame()
     --stack:pop()
 end
 
-function Intro:keypressed(k, u)
+function Intro:keypressed(key, scancode, isrepeat)
     --startgame()
 end
 

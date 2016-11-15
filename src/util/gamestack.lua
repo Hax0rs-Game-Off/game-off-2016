@@ -41,8 +41,8 @@ function GameStack:draw()
     if self:current() then self:current():draw() end
 end
 
-function GameStack:keypressed(k, u)
-    if self:current() then self:current():keypressed(k, u) end
+function GameStack:keypressed(key, scancode, isrepeat)
+    if self:current() then self:current():keypressed(key, scancode, isrepeat) end
 end
 
 function GameStack:mousepressed(x, y, button, istouch)
