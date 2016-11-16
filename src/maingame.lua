@@ -5,12 +5,55 @@ require("time")
 
 local sti = require("util/Simple-Tiled-Implementation/sti")
 
+local Grid = require("util/Jumper/jumper.grid")
+local Pathfinder = require("util/Jumper/jumper.pathfinder")
+
 MainGame = class("mainGame", GameState)
 
-function MainGame:start()
-    person = Person(images.people.manblue, "stand")
-    person:set_pos(50, 50)
+debug = false
 
+function setblocked(map, layer)
+    for j=1,layer["height"] do
+        for i=1,layer["width"] do
+            local tile = layer["data"][j][i]
+            if tile ~= nil then
+                map[j][i] = 1
+            end
+        end
+    end
+end
+
+function generatePathfinder(map)
+    local test = map.layers["walls"]
+
+    -- generate the plain map
+    local mapa = {}
+    for j=1,test["height"] do
+        mapa[j] = {}
+        for i=1,test["width"] do
+            mapa[j][i] = 0
+        end
+    end
+
+    setblocked(mapa, map.layers["walls"])
+    setblocked(mapa, map.layers["objects"])
+    setblocked(mapa, map.layers["outdoor"])
+
+    local grid = Grid(mapa)
+    local walkable = 0
+    local myFinder = Pathfinder(grid, 'DIJKSTRA', walkable)
+    -- only cardinal directions
+    myFinder:setMode('ORTHOGONAL')
+
+    -- so they cannot go through wall edges
+    myFinder:setTunnelling(false)
+
+    myFinder:annotateGrid()
+
+    return myFinder
+end
+
+function MainGame:start()
     time = Time(540)
 
     -- Grab window size
@@ -20,6 +63,13 @@ function MainGame:start()
     ty = 0
     sf = 0.5
     map = sti("assets/maps/1.lua", { "box2d" })
+
+    local finder = generatePathfinder(map)
+
+
+    person = Person(images.people.manblue, "stand", finder)
+    person:set_pos(50, 50)
+
 end
 
 function MainGame:update(dt)
@@ -78,11 +128,16 @@ function MainGame:keypressed(key, scancode, isrepeat)
     if key == "3" then
         time.speed = 3;
     end
+    if key == "f2" then
+        debug = not debug;
+    end
     --stack:pop()
 end
 
 function MainGame:mousepressed(x, y, button, istouch)
-    person:set_pos(x/sf + tx, y/sf + ty)
+    --person:set_pos(x/sf + tx, y/sf + ty)
+    local truex, truey = x/sf + tx, y/sf + ty
+    person:path_to(truex, truey)
     --stack:pop()
 end
 

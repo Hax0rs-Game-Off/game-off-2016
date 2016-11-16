@@ -4,3 +4,6 @@
 [submodule "src/util/Simple-Tiled-Implementation"]
 	path = src/util/Simple-Tiled-Implementation
 	url = https://github.com/karai17/Simple-Tiled-Implementation
+[submodule "src/util/Jumper"]
+	path = src/util/Jumper
+	url = https://github.com/Yonaba/Jumper
