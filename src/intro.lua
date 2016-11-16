@@ -12,7 +12,7 @@ function Intro:draw()
 
     love.graphics.clear()
     --love.graphics.setFont(resources.fonts.normal)
-    love.graphics.print("Press mouse to proceed\nArrows keys to scroll, or grab scroll\nScroll wheel to zoom\n`,1,2,3 to change speed\nF2 for debug info", 10, 10)
+    love.graphics.print("Press mouse to proceed\nArrows keys to scroll, or grab scroll\nScroll wheel to zoom\n`,1,2,..,9 to change speed\nF2 for debug info", 10, 10)
 end
 
 local function startgame()

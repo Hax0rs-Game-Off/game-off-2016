@@ -69,6 +69,16 @@ function MainGame:start()
 
     local finder = generatePathfinder(map)
 
+    objects = {}
+
+    for k,v in pairs(map.layers["locations"].objects) do
+        objects[v.name] = v
+    end
+
+    for k,v in pairs(objects) do
+        print(k,v)
+    end
+
     people = {}
     dad = Person(images.people.manblue, "stand", finder)
     mum = Person(images.people.womengreen, "stand", finder)
@@ -77,6 +87,8 @@ function MainGame:start()
 
     people[#people+1] = dad
     people[#people+1] = mum
+    local obj = objects["fun1"]
+    dad:path_to(obj.x, obj.y)
 end
 
 function MainGame:update(dt)
@@ -139,8 +151,27 @@ function MainGame:keypressed(key, scancode, isrepeat)
     if key == "3" then
         time.speed = 3;
     end
+    if key == "4" then
+        time.speed = 4;
+    end
+    if key == "5" then
+        time.speed = 5;
+    end
+    if key == "6" then
+        time.speed = 6;
+    end
+    if key == "7" then
+        time.speed = 7;
+    end
+    if key == "8" then
+        time.speed = 8;
+    end
+    if key == "9" then
+        time.speed = 9;
+    end
     if key == "f2" then
         debug = not debug;
+        map.layers["locations"].visible = debug
     end
 end
 

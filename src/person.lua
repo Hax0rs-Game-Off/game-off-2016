@@ -65,10 +65,13 @@ function Person:update(dt)
     if self.path then
         if self.next_node then
             local center = self:getCenter()
-            local xa = self.next_node:getX()*128-64 - center.x
-            local ya = self.next_node:getY()*128-64 - center.y
+            local tox, toy = self.next_node:getX()*128-64, self.next_node:getY()*128-64;
+            local xa = tox - center.x
+            local ya = toy - center.y
             local len = math.sqrt(xa*xa + ya*ya)
-            if len < 4 then
+            if len < dt*100 then -- if we can get there in one step
+                -- teleport them to on point
+                self:set_pos(tox, toy)
                 self.next_node = self.nodes()
                 if self.next_node == nil then
                     self.path = nil
