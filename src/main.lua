@@ -44,8 +44,20 @@ function love.keypressed(key, scancode, isrepeat)
     stack:keypressed(key, scancode, isrepeat)
 end
 
-function love.mousepressed( x, y, button, istouch )
+function love.mousepressed(x, y, button, istouch)
     stack:mousepressed(x, y, button, istouch)
+end
+
+function love.mousereleased(x, y, button, istouch)
+    stack:mousereleased(x, y, button, istouch)
+end
+
+function love.mousemoved(x, y, dx, dy, istouch)
+    stack:mousemoved(x, y, dx, dy, istouch)
+end
+
+function love.wheelmoved(x, y)
+    stack:wheelmoved(x, y)
 end
 
 function love.resize(w, h)

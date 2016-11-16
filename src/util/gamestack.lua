@@ -49,6 +49,18 @@ function GameStack:mousepressed(x, y, button, istouch)
     if self:current() then self:current():mousepressed(x, y, button, istouch) end
 end
 
+function GameStack:mousereleased(x, y, button, istouch)
+    if self:current() then self:current():mousereleased(x, y, button, istouch) end
+end
+
+function GameStack:mousemoved(x, y, dx, dy, istouch)
+    if self:current() then self:current():mousemoved(x, y, dx, dy, istouch) end
+end
+
+function GameStack:wheelmoved(x, y)
+    if self:current() then self:current():wheelmoved(x, y) end
+end
+
 function GameStack:resize(w, h)
     if self:current() then self:current():resize(w, h) end
 end

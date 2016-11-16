@@ -41,9 +41,9 @@ function generatePathfinder(map)
 
     local grid = Grid(mapa)
     local walkable = 0
-    local myFinder = Pathfinder(grid, 'DIJKSTRA', walkable)
+    local myFinder = Pathfinder(grid, 'ASTAR', walkable)
     -- only cardinal directions
-    myFinder:setMode('ORTHOGONAL')
+    --myFinder:setMode('ORTHOGONAL')
 
     -- so they cannot go through wall edges
     myFinder:setTunnelling(false)
@@ -59,17 +59,24 @@ function MainGame:start()
     -- Grab window size
     windowWidth  = love.graphics.getWidth()
     windowHeight = love.graphics.getHeight()
+
     tx = 0
     ty = 0
     sf = 0.5
+    draggin = false
+
     map = sti("assets/maps/1.lua", { "box2d" })
 
     local finder = generatePathfinder(map)
 
+    people = {}
+    dad = Person(images.people.manblue, "stand", finder)
+    mum = Person(images.people.womengreen, "stand", finder)
+    dad:set_pos(50, 50)
+    mum:set_pos(50, 100)
 
-    person = Person(images.people.manblue, "stand", finder)
-    person:set_pos(50, 50)
-
+    people[#people+1] = dad
+    people[#people+1] = mum
 end
 
 function MainGame:update(dt)
@@ -89,7 +96,9 @@ function MainGame:update(dt)
     ty = d and ty + 128*8*dt or ty
 
     wdt = time:update(dt) -- the time acording to the game world
-    person:update(wdt) -- meirl
+    for i, person in pairs(people) do
+        person:update(wdt) -- meirl
+    end
 end
 
 function MainGame:draw()
@@ -105,7 +114,9 @@ function MainGame:draw()
     map:draw()
 
     love.graphics.scale(1)
-    person:draw()
+    for i, person in pairs(people) do
+        person:draw()
+    end
 
     love.graphics.translate(tx, ty)
     love.graphics.scale(1/sf)
@@ -131,18 +142,39 @@ function MainGame:keypressed(key, scancode, isrepeat)
     if key == "f2" then
         debug = not debug;
     end
-    --stack:pop()
 end
 
 function MainGame:mousepressed(x, y, button, istouch)
     --person:set_pos(x/sf + tx, y/sf + ty)
     local truex, truey = x/sf + tx, y/sf + ty
-    person:path_to(truex, truey)
-    --stack:pop()
+    if button == 1 then
+        draggin = true
+    end
+end
+
+function MainGame:mousemoved(x, y, dx, dy, istouch)
+    if draggin then
+        tx = tx + dx * -1/sf
+        ty = ty + dy * -1/sf
+    end
+end
+
+function MainGame:mousereleased(x, y, button, istouch)
+    --person:set_pos(x/sf + tx, y/sf + ty)
+    local truex, truey = x/sf + tx, y/sf + ty
+    if button == 1 then
+        draggin = false
+    elseif button == 2 then
+        mum:path_to(truex, truey)
+    end
 end
 
 function MainGame:resize(w, h)
     windowWidth  = w
     windowHeight = h
     map:resize(w, h)
+end
+
+function MainGame:wheelmoved(x, y)
+    sf = sf * (7/8)^(-y)
 end
