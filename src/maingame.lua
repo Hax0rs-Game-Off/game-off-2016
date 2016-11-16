@@ -90,10 +90,10 @@ function MainGame:update(dt)
     local u  = kd("up")    or kd("w")
     local d  = kd("down")  or kd("s")
 
-    tx = l and tx - 128*8*dt or tx
-    tx = r and tx + 128*8*dt or tx
-    ty = u and ty - 128*8*dt or ty
-    ty = d and ty + 128*8*dt or ty
+    tx = l and tx - 128*16*dt*sf or tx
+    tx = r and tx + 128*18*dt*sf or tx
+    ty = u and ty - 128*18*dt*sf or ty
+    ty = d and ty + 128*18*dt*sf or ty
 
     wdt = time:update(dt) -- the time acording to the game world
     for i, person in pairs(people) do
