@@ -1,7 +1,9 @@
 
 Person = class("Person")
 
-function Person:__init(folder, state, finder)
+function Person:__init(name, folder, state, finder)
+    self.name = name
+
     self.r = 0
     self.x = 0
     self.y = 0
@@ -13,14 +15,23 @@ function Person:__init(folder, state, finder)
     self.callback = nil
 
     self.currentLoc = nil
+    self.currentTarget = nil
 
-    self.hunger = 100
-    self.hunger_decay = -1
-    self.sleepy = 100
-    self.sleepy_decay = -1
+    self.needs = {}
+    self.needs_decay = {}
+    self.needs_callback = {}
+    self:addNeed("Hunger", 100, 10, function() print("0 hunger, dead") end)
+    self:addNeed("Sleep", 100, 3, function() print("0 sleep, passout") end)
+    self:addNeed("Fun", 100, 1, function() print("0 fun, cry") end)
 
     self.us = folder
     self:change_state(state)
+end
+
+function Person:addNeed(name, initial, decay_rate, callback)
+    self.needs[name] = initial
+    self.needs_decay[name] = decay_rate
+    self.needs_callback[name] = callback
 end
 
 function Person:change_state(state)
@@ -43,10 +54,20 @@ function Person:go_to(object)
         self.currentLoc = nil
     end
 
+    if self.currentTarget then
+        self.currentTarget.inuse = false
+        self.currentTatget = nil
+    end
+
+   self.currentTarget = object
+
+    -- as we are going to use it, stop others from snatching
+    object.inuse = true;
+
     self:path_to(object.x, object.y, function()
         self.r = (object.properties["face"]-1) * 1.5708; 
-        object.inuse = true;
         self.currentLoc = object;
+        self.currentTarget = nil;
     end)
 end
 
@@ -76,11 +97,17 @@ function Person:getCenter()
 end
 
 function Person:update(dt)
-    self.hunger = self.hunger + self.hunger_decay * dt
-    self.sleepy = self.sleepy + self.sleepy_decay * dt
-    -- min these values
-    self.hunger = self.hunger < 0 and 0 or self.hunger
-    self.sleepy = self.sleepy < 0 and 0 or self.sleepy
+    for k, v in pairs(self.needs) do
+        if self.needs[k] > 0 then -- skip over zero needs
+            -- apply decay
+            self.needs[k] = self.needs[k] - self.needs_decay[k] * dt
+            -- set minimum
+            self.needs[k] = self.needs[k] < 0 and 0 or self.needs[k]
+            if self.needs[k] <= 0 then -- callback
+                self.needs_callback[k]()
+            end
+        end
+    end
 
     if self.path then
         if self.next_node then
@@ -112,10 +139,13 @@ end
 
 function Person:getinfostring()
     local info = {}
-    info["Hunger"] = string.format("%02d", self.hunger)
-    info["Sleepy"] = string.format("%02d", self.sleepy)
+    for k,v in pairs(self.needs) do
+        info[k] = string.format("%02d", self.needs[k])
+    end
+    info["Name"] = self.name
     info["State"] = self.state
     info["currentLoc"] = self.currentLoc and self.currentLoc.name or "none"
+    info["currentTaget"] = self.currentTarget and self.currentTarget.name or "none"
     local infostring = ""
     for k,v in pairs(info) do
         infostring = infostring .. k .. ": " .. v .. "\n"

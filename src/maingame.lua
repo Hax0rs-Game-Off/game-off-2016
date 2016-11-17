@@ -54,7 +54,7 @@ function generatePathfinder(map)
 end
 
 function MainGame:start()
-    time = Time(540)
+    time = Time(540, images.sky)
 
     -- Grab window size
     windowWidth  = love.graphics.getWidth()
@@ -65,7 +65,7 @@ function MainGame:start()
     sf = 0.5
     draggin = false
 
-    map = sti("assets/maps/1.lua", { "box2d" })
+    map = sti("assets/maps/apartment.lua", { "box2d" })
 
     local finder = generatePathfinder(map)
 
@@ -77,15 +77,11 @@ function MainGame:start()
     end
 
     people = {}
-    dad = Person(images.people.manblue, "stand", finder)
-    mum = Person(images.people.womengreen, "stand", finder)
-    dad:set_pos(50, 50)
-    mum:set_pos(50, 100)
-
-    people[#people+1] = dad
-    people[#people+1] = mum
-    dad:go_to(objects["fun1"])
-    mum:go_to(objects["cook"])
+    for k,v in pairs(map.layers["people"].objects) do
+        person = Person(v.name, images.people[v.properties["sprite"]], "stand", finder)
+        person:set_pos(v.x+64, v.y+64) -- for the middle of the tile
+        people[v.name] = person
+    end
 end
 
 function MainGame:update(dt)
@@ -111,7 +107,7 @@ function MainGame:update(dt)
 end
 
 function MainGame:draw()
-    love.graphics.setBackgroundColor(17, 17, 17)
+    love.graphics.setBackgroundColor(time:getColor())
     love.graphics.setColor(255, 255, 255)
 
     love.graphics.scale(sf)
@@ -154,16 +150,16 @@ function MainGame:keypressed(key, scancode, isrepeat)
         time.speed = 5;
     end
     if key == "6" then
-        time.speed = 6;
+        time.speed = 10;
     end
     if key == "7" then
-        time.speed = 7;
+        time.speed = 20;
     end
     if key == "8" then
-        time.speed = 8;
+        time.speed = 60;
     end
     if key == "9" then
-        time.speed = 9;
+        time.speed = 240;
     end
     if key == "f2" then
         debug = not debug;
@@ -200,11 +196,10 @@ function MainGame:mousereleased(x, y, button, istouch)
     if button == 1 then
         draggin = false
     elseif button == 2 then
---        mum:path_to(truex, truey, function() print("here") end)
         -- get the object under the mouse
         local obj = self:getObject(truex, truey)
         if obj ~= nil then
-            mum:go_to(obj)
+            people["mum"]:go_to(obj)
         end
     end
 end
