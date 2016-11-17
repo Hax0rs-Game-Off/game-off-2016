@@ -73,10 +73,7 @@ function MainGame:start()
 
     for k,v in pairs(map.layers["locations"].objects) do
         objects[v.name] = v
-    end
-
-    for k,v in pairs(objects) do
-        print(k,v)
+        objects[v.name].inuse = false
     end
 
     people = {}
@@ -87,8 +84,8 @@ function MainGame:start()
 
     people[#people+1] = dad
     people[#people+1] = mum
-    local obj = objects["fun1"]
-    dad:path_to(obj.x, obj.y)
+    dad:go_to(objects["fun1"])
+    mum:go_to(objects["cook"])
 end
 
 function MainGame:update(dt)
@@ -134,7 +131,6 @@ function MainGame:draw()
     love.graphics.scale(1/sf)
 
     time:draw()
-
     love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
 end
 
@@ -176,7 +172,6 @@ function MainGame:keypressed(key, scancode, isrepeat)
 end
 
 function MainGame:mousepressed(x, y, button, istouch)
-    --person:set_pos(x/sf + tx, y/sf + ty)
     local truex, truey = x/sf + tx, y/sf + ty
     if button == 1 then
         draggin = true
@@ -190,13 +185,27 @@ function MainGame:mousemoved(x, y, dx, dy, istouch)
     end
 end
 
+function MainGame:getObject(x, y)
+    for k, v in pairs(objects) do
+        if x >= v.x and x <= v.x+v.width and
+           y >= v.y and y <= v.y+v.height then
+            return v
+        end
+    end
+    return nil
+end
+
 function MainGame:mousereleased(x, y, button, istouch)
-    --person:set_pos(x/sf + tx, y/sf + ty)
     local truex, truey = x/sf + tx, y/sf + ty
     if button == 1 then
         draggin = false
     elseif button == 2 then
-        mum:path_to(truex, truey)
+--        mum:path_to(truex, truey, function() print("here") end)
+        -- get the object under the mouse
+        local obj = self:getObject(truex, truey)
+        if obj ~= nil then
+            mum:go_to(obj)
+        end
     end
 end
 

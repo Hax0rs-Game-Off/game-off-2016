@@ -10,6 +10,9 @@ function Person:__init(folder, state, finder)
     self.path = nil
     self.next_node = nil
     self.nodes = nil
+    self.callback = nil
+
+    self.currentLoc = nil
 
     self.hunger = 100
     self.hunger_decay = -1
@@ -32,7 +35,22 @@ function Person:set_pos(x, y)
     self.y = y + self.cih/2
 end
 
-function Person:path_to(x, y)
+function Person:go_to(object)
+    if object.inuse then return end
+
+    if self.currentLoc then
+        self.currentLoc.inuse = false
+        self.currentLoc = nil
+    end
+
+    self:path_to(object.x, object.y, function()
+        self.r = (object.properties["face"]-1) * 1.5708; 
+        object.inuse = true;
+        self.currentLoc = object;
+    end)
+end
+
+function Person:path_to(x, y, callback)
     local tilesx, tilesy = math.floor(self.x/128)+1, math.floor(self.y/128)+1
     local tilex, tiley = math.floor(x/128)+1, math.floor(y/128)+1
 
@@ -41,10 +59,12 @@ function Person:path_to(x, y)
         self.path = path
         self.nodes = self.path:nodes()
         self.next_node = self.nodes()
+        self.callback = callback
     else
         self.path = nil
         self.nodes = nil
         self.next_node = nil
+        self.callback = nil
     end
 end
 
@@ -76,6 +96,10 @@ function Person:update(dt)
                 if self.next_node == nil then
                     self.path = nil
                     self.nodes = nil
+                    if self.callback then
+                        self.callback()
+                        self.callback = nil
+                    end
                 end
             else
                 self.r = math.atan2(ya, xa)
@@ -84,6 +108,19 @@ function Person:update(dt)
             end
         end
     end
+end
+
+function Person:getinfostring()
+    local info = {}
+    info["Hunger"] = string.format("%02d", self.hunger)
+    info["Sleepy"] = string.format("%02d", self.sleepy)
+    info["State"] = self.state
+    info["currentLoc"] = self.currentLoc and self.currentLoc.name or "none"
+    local infostring = ""
+    for k,v in pairs(info) do
+        infostring = infostring .. k .. ": " .. v .. "\n"
+    end
+    return infostring
 end
 
 function Person:draw()
@@ -103,7 +140,6 @@ function Person:draw()
                love.graphics.setColor(255,255,255)
             end
         end
-        local infostring = string.format("Hunger: %03d\nSleepy:%03d", self.hunger, self.sleepy)
-        love.graphics.print(infostring, self.x, self.y, 0, 1, 1)
+        love.graphics.print(self:getinfostring(), self.x, self.y, 0, 1, 1)
     end
 end
