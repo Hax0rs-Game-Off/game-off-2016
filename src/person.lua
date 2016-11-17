@@ -1,12 +1,15 @@
+require("ai")
 
 Person = class("Person")
 
-function Person:__init(name, folder, state, finder)
+function Person:__init(name, folder, state, finder, objects)
     self.name = name
 
     self.r = 0
     self.x = 0
     self.y = 0
+
+    self.speed = 5000
 
     self.finder = finder
     self.path = nil
@@ -15,23 +18,33 @@ function Person:__init(name, folder, state, finder)
     self.callback = nil
 
     self.currentLoc = nil
-    self.currentTarget = nil
+    self.targetLoc = nil
 
     self.needs = {}
     self.needs_decay = {}
     self.needs_callback = {}
+    self.needs_objects = {}
+    -- order of importance
+    self:addNeed("Bladder", 100, 2, function() print("0 bladder, pee self") end)
     self:addNeed("Hunger", 100, 10, function() print("0 hunger, dead") end)
     self:addNeed("Sleep", 100, 3, function() print("0 sleep, passout") end)
     self:addNeed("Fun", 100, 1, function() print("0 fun, cry") end)
 
     self.us = folder
     self:change_state(state)
+
+    self.ai = AI(self)
+end
+
+function Person:addNeedLocation(need, location)
+    self.needs_objects[need][#self.needs_objects[need]+1] = location
 end
 
 function Person:addNeed(name, initial, decay_rate, callback)
     self.needs[name] = initial
     self.needs_decay[name] = decay_rate
     self.needs_callback[name] = callback
+    self.needs_objects[name] = {}
 end
 
 function Person:change_state(state)
@@ -54,12 +67,12 @@ function Person:go_to(object)
         self.currentLoc = nil
     end
 
-    if self.currentTarget then
-        self.currentTarget.inuse = false
+    if self.targetLoc then
+        self.targetLoc.inuse = false
         self.currentTatget = nil
     end
 
-   self.currentTarget = object
+   self.targetLoc = object
 
     -- as we are going to use it, stop others from snatching
     object.inuse = true;
@@ -67,7 +80,7 @@ function Person:go_to(object)
     self:path_to(object.x, object.y, function()
         self.r = (object.properties["face"]-1) * 1.5708; 
         self.currentLoc = object;
-        self.currentTarget = nil;
+        self.targetLoc = nil;
     end)
 end
 
@@ -96,9 +109,24 @@ function Person:getCenter()
     return out
 end
 
+function Person:getNextAvail(need)
+    for k, v in pairs(self.needs_objects[need]) do
+        if not v.inuse then
+            return v
+        end
+    end
+    return nil
+end
+
 function Person:update(dt)
     for k, v in pairs(self.needs) do
-        if self.needs[k] > 0 then -- skip over zero needs
+        -- if we are increasing, we only care about increasing
+        if self.currentLoc and self.currentLoc.properties["need"] == k then
+            -- apply increase
+            self.needs[k] = self.needs[k] + self.currentLoc.properties["need_boost"] * dt
+            -- set maximum
+            self.needs[k] = self.needs[k] > 100 and 100 or self.needs[k]
+        elseif self.needs[k] > 0 then -- skip over zero needs
             -- apply decay
             self.needs[k] = self.needs[k] - self.needs_decay[k] * dt
             -- set minimum
@@ -116,7 +144,7 @@ function Person:update(dt)
             local xa = tox - center.x
             local ya = toy - center.y
             local len = math.sqrt(xa*xa + ya*ya)
-            if len < dt*100 then -- if we can get there in one step
+            if len < dt * self.speed then -- if we can get there in one step
                 -- teleport them to on point
                 self:set_pos(tox, toy)
                 self.next_node = self.nodes()
@@ -130,11 +158,14 @@ function Person:update(dt)
                 end
             else
                 self.r = math.atan2(ya, xa)
-                self.x = self.x + dt * xa/len * 100
-                self.y = self.y + dt * ya/len * 100
+                self.x = self.x + dt * xa/len * self.speed
+                self.y = self.y + dt * ya/len * self.speed
             end
         end
     end
+
+    -- AI here
+    self.ai:think(dt)
 end
 
 function Person:getinfostring()
@@ -144,8 +175,8 @@ function Person:getinfostring()
     end
     info["Name"] = self.name
     info["State"] = self.state
-    info["currentLoc"] = self.currentLoc and self.currentLoc.name or "none"
-    info["currentTaget"] = self.currentTarget and self.currentTarget.name or "none"
+    info["CurrentLoc"] = self.currentLoc and self.currentLoc.name or "none"
+    info["TargetLoc"] = self.targetLoc and self.targetLoc.name or "none"
     local infostring = ""
     for k,v in pairs(info) do
         infostring = infostring .. k .. ": " .. v .. "\n"

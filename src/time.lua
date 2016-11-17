@@ -3,18 +3,20 @@ Time = class("Time")
 function Time:__init(starttime, gradient)
     self.total_minutes = starttime
     self.rate = 1/1 -- 1 ingame minute per 1 irl second
-    self.speed = 1 -- multiplier
+    self.speed = 1/60 -- multiplier
     self.gradient = gradient
 end
 
 function Time:calculate()
     local time = {}
 
+    local seconds = math.floor(60*(self.total_minutes - math.floor(self.total_minutes)))
     local minutes = math.floor(self.total_minutes % 60)
     local total_hours = math.floor(self.total_minutes / 60)
     local hours = total_hours % 24
     local total_days = math.floor(total_hours / 24)
 
+    time["seconds"] = seconds
     time["minutes"] = minutes
     time["hours"] = hours
     time["days"] = total_days
@@ -34,6 +36,6 @@ end
 
 function Time:draw()
     local info = self:calculate()
-    local timestring = string.format("Time: %02d:%02d on Day %d (x%d)", info["hours"], info["minutes"], info["days"]+1, self.speed)
+    local timestring = string.format("Time: %02d:%02d:%02d on Day %d (x%d)", info["hours"], info["minutes"], info["seconds"], info["days"]+1, self.speed)
     love.graphics.print(timestring, 100, 5, 0, 1, 1)
 end

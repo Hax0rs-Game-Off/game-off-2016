@@ -76,11 +76,25 @@ function MainGame:start()
         objects[v.name].inuse = false
     end
 
+
     people = {}
     for k,v in pairs(map.layers["people"].objects) do
-        person = Person(v.name, images.people[v.properties["sprite"]], "stand", finder)
+        person = Person(v.name, images.people[v.properties["sprite"]], "stand", finder, objects)
         person:set_pos(v.x+64, v.y+64) -- for the middle of the tile
         people[v.name] = person
+    end
+
+
+    for name, object in pairs(objects) do
+        if object.properties["need"] then
+            for i, person in pairs(people) do
+                if object.properties["reserved"] and object.properties["reserved"] ~= person.name then
+                    -- skip if they are not owner and there is one
+                else
+                    person:addNeedLocation(object.properties["need"], object)
+                end
+            end
+        end
     end
 end
 
@@ -135,16 +149,16 @@ function MainGame:keypressed(key, scancode, isrepeat)
         time.speed = 0;
     end
     if key == "1" then
-        time.speed = 1;
+        time.speed = 1/8;
     end
     if key == "2" then
-        time.speed = 2;
+        time.speed = 1/4;
     end
     if key == "3" then
-        time.speed = 3;
+        time.speed = 1/2;
     end
     if key == "4" then
-        time.speed = 4;
+        time.speed = 1;
     end
     if key == "5" then
         time.speed = 5;
