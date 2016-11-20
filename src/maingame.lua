@@ -79,7 +79,7 @@ function MainGame:start()
 
     people = {}
     for k,v in pairs(map.layers["people"].objects) do
-        person = Person(v.name, images.people[v.properties["sprite"]], "stand", finder, objects)
+        person = Person(v.name, images.people[v.properties["sprite"]], "stand", finder)
         person:set_pos(v.x+64, v.y+64) -- for the middle of the tile
         people[v.name] = person
     end

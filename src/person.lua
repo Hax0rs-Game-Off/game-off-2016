@@ -2,7 +2,7 @@ require("ai")
 
 Person = class("Person")
 
-function Person:__init(name, folder, state, finder, objects)
+function Person:__init(name, folder, state, finder)
     self.name = name
 
     self.r = 0
